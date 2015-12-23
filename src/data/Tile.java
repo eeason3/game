@@ -22,11 +22,11 @@ public class Tile {
 		this.texture = QuickLoad(type.TextureName);
 		
 	}
-
+	
 	public Texture getTex() {
 		return texture;
 	}
-
+	
 	public boolean isSolid() {
 		return type.Solid;
 	}

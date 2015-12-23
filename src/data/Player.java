@@ -8,14 +8,12 @@ import static helpers.Artist.*;
 public class Player extends Sprite{
 	
 	private int JumpSpeed = 0;
-	private TileGrid map;
 	private int Speed = 4;
 	private int FallSpeed = 0;
 	private final int MaxFall = 16;
 	
 	public Player(int x, int y, int width, int height, TileGrid map) {
-		super(x, y, width, height, true);
-		this.map = map;
+		super(x, y, width, height, true, map);
 	}
 	
 	public void move(){
@@ -37,6 +35,7 @@ public class Player extends Sprite{
 				x+=x%32;
 			}
 		}
+		System.out.println(Grounded() + ": " + FallSpeed);
 		if (FallSpeed != 0 || !Grounded()){
 			if (FallSpeed < MaxFall)
 				FallSpeed++;
@@ -47,7 +46,7 @@ public class Player extends Sprite{
 					y+=FallSpeed;
 				}else {
 					if(FallSpeed > 0)
-						y+=(32-y%32);
+						y+=(32-y%32)%32;
 					else 
 						y-=y%32;
 					FallSpeed = 0;
@@ -55,22 +54,19 @@ public class Player extends Sprite{
 		}else {
 			FallSpeed = 0;
 			if(Keyboard.isKeyDown(Keyboard.KEY_W)){
-				FallSpeed = -20;
+				FallSpeed = -10;
 			}
 		}
+		
+		if(x < 0)
+			x=0;
+		if(x>map.getX()*32-width)
+			x=map.getX()*32-width;
 		
 		XOFFSET = -x+WIDTH/2+16;
 		YOFFSET = -y+HEIGHT/2+16;
 	}
 	
-	private boolean Grounded(){
-		boolean collision = map.getTile(x/32, (y+height)/32).type.Solid;
-		boolean collision2 = map.getTile((x+width-1)/32, (y+height)/32).type.Solid;
-		if (collision || collision2) 
-			return true;
-		else
-			return false;
-	}
 	public int getJump(){
 		return JumpSpeed;
 	}
@@ -87,36 +83,6 @@ public class Player extends Sprite{
 		JumpSpeed += jump;
 	}
 	
-	private boolean Collision(int xMove){
-		int xPos = (x+xMove)/32;
-		int yStart = y/32;
-		int yEnd = (y+height-1)/32;
-		if(xMove > 0){
-			xPos = (x+xMove+width-1)/32;
-		}
-		Tile[] tiles = map.getTilesY(yStart, yEnd, xPos);
-		for (Tile t : tiles){
-			if (t.isSolid()){
-				return true;
-			}
-		}
-		return false;
-	}
 	
-	private boolean CollisionY(int yMove){
-		int yPos = (y+yMove)/32;
-		int xStart = x/32;
-		int xEnd = (x+width-1)/32;
-		if(yMove > 0){
-			yPos = (y+yMove+height-1)/32;
-		}
-		Tile[] tiles = map.getTilesX(xStart, xEnd, yPos);
-		for (Tile t : tiles){
-			if (t.isSolid()){
-				return true;
-			}
-		}
-		return false;
-	}
 	
 }
